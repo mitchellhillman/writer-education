@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>100 Famous Writers (Last 200 Years)</title>
+<title>113 Famous Writers (Last 200 Years)</title>
 <style>
   :root {
     --bg: #ffffff;
@@ -17,6 +17,7 @@
     --poet: #e10600;
     --playwright: #0a4fc4;
     --journalist: #767676;
+    --historian: #1f7a5c;
   }
   * { box-sizing: border-box; }
   html { -webkit-font-smoothing: antialiased; }
@@ -158,6 +159,7 @@
   .badge.Poet { background: var(--poet); }
   .badge.Playwright { background: var(--playwright); }
   .badge.Journalist { background: var(--journalist); }
+  .badge.Historian { background: var(--historian); }
   .dates { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
   .mobile-sort {
     display: none;
@@ -241,7 +243,7 @@
 </head>
 <body>
 <header>
-  <h1>100 Famous Writers of the Last 200 Years</h1>
+  <h1>113 Famous Writers of the Last 200 Years</h1>
   <p>Novelists, poets, playwrights &amp; journalists. Education, dates, and major works (sourced from Wikipedia).</p>
   <p class="stat" id="stat"></p>
   <p class="stat" id="stat2"></p>
@@ -379,7 +381,20 @@ const authors = [
   {n:"Nellie Bly",cat:"Journalist",born:"5 May 1864",by:1864,died:"27 Jan 1922",dy:1922,edu:"No degree; one term at Indiana Normal School (1879).",works:"\"The Girl Puzzle\" (1885), \"Ten Days in a Mad-House\" (1887), Six Months in Mexico (1888), Around the World in Seventy-Two Days (1890)"},
   {n:"H.L. Mencken",cat:"Journalist",born:"12 Sep 1880",by:1880,died:"29 Jan 1956",dy:1956,edu:"Valedictorian, Baltimore Polytechnic Institute (1896); minimal post-secondary.",works:"The Philosophy of Friedrich Nietzsche (1908), A Book of Prefaces (1917), The American Language (1919), Notes on Democracy (1926), Happy Days (1940)"},
   {n:"Ernie Pyle",cat:"Journalist",born:"3 Aug 1900",by:1900,died:"18 Apr 1945",dy:1945,edu:"Attended Indiana University Bloomington (left a semester short, no degree).",works:"Ernie Pyle in England (1941), Here Is Your War (1943), \"The Death of Captain Waskow\" (1944), Brave Men (1944), Home Country (1947)"},
-  {n:"Hunter S. Thompson",cat:"Journalist",born:"18 Jul 1937",by:1937,died:"20 Feb 2005",dy:2005,edu:"No degree; did not graduate high school; audited courses at Columbia.",works:"Hell's Angels (1967), Fear and Loathing in Las Vegas (1972), Fear and Loathing on the Campaign Trail '72 (1973), The Rum Diary (1998), Kingdom of Fear (2003)"}
+  {n:"Hunter S. Thompson",cat:"Journalist",born:"18 Jul 1937",by:1937,died:"20 Feb 2005",dy:2005,edu:"No degree; did not graduate high school; audited courses at Columbia.",works:"Hell's Angels (1967), Fear and Loathing in Las Vegas (1972), Fear and Loathing on the Campaign Trail '72 (1973), The Rum Diary (1998), Kingdom of Fear (2003)"},
+  {n:"Lord Byron",cat:"Poet",born:"22 Jan 1788",by:1788,died:"19 Apr 1824",dy:1824,edu:"Trinity College, Cambridge — nobleman's M.A. conferred without examination (1808).",works:"Childe Harold's Pilgrimage (1812), The Giaour (1813), Manfred (1817), Don Juan (1819–24)"},
+  {n:"C.S. Lewis",cat:"Novelist",born:"29 Nov 1898",by:1898,died:"22 Nov 1963",dy:1963,edu:"Triple First (Mods, Greats, English), University College, Oxford. No doctorate.",works:"The Allegory of Love (1936), The Screwtape Letters (1942), The Lion, the Witch and the Wardrobe (1950), Mere Christianity (1952)"},
+  {n:"Charles Bukowski",cat:"Poet",born:"16 Aug 1920",by:1920,died:"9 Mar 1994",dy:1994,edu:"Attended Los Angeles City College (1939–41); no degree. Self-taught.",works:"Post Office (1971), Factotum (1975), Women (1978), Ham on Rye (1982), Barfly (1987)"},
+  {n:"Kurt Vonnegut",cat:"Novelist",born:"11 Nov 1922",by:1922,died:"11 Apr 2007",dy:2007,edu:"M.A. anthropology, University of Chicago (1971); attended Cornell (no undergrad degree).",works:"Player Piano (1952), Cat's Cradle (1963), Slaughterhouse-Five (1969), Breakfast of Champions (1973)"},
+  {n:"Robert Caro",cat:"Journalist",born:"30 Oct 1935",by:1935,died:"—",dy:9999,edu:"B.A. English, Princeton (1957); Nieman Fellow, Harvard (not a degree).",works:"The Power Broker (1974), The Years of Lyndon Johnson: The Path to Power (1982), Master of the Senate (2002), The Passage of Power (2012)"},
+  {n:"Michael Crichton",cat:"Novelist",born:"23 Oct 1942",by:1942,died:"4 Nov 2008",dy:2008,edu:"A.B. Harvard (1964); M.D., Harvard Medical School (1969).",works:"The Andromeda Strain (1969), Sphere (1987), Jurassic Park (1990), Timeline (1999)"},
+  {n:"Ron Chernow",cat:"Historian",born:"3 Mar 1949",by:1949,died:"—",dy:9999,edu:"B.A. English, Yale (1970); further study at Pembroke College, Cambridge (no advanced degree).",works:"The House of Morgan (1990), Titan (1998), Alexander Hamilton (2004), Washington: A Life (2010), Grant (2017)"},
+  {n:"George R.R. Martin",cat:"Novelist",born:"20 Sep 1948",by:1948,died:"—",dy:9999,edu:"M.S. Journalism (1971) & B.S. Journalism, Northwestern (Medill).",works:"Sandkings (1979), Fevre Dream (1982), A Game of Thrones (1996), A Clash of Kings (1998)"},
+  {n:"Andrew Roberts",cat:"Historian",born:"13 Jan 1963",by:1963,died:"—",dy:9999,edu:"B.A. & earned PhD in Modern History, Gonville & Caius College, Cambridge.",works:"Salisbury: Victorian Titan (1999), The Storm of War (2009), Napoleon the Great (2014), Churchill: Walking with Destiny (2018)"},
+  {n:"J.K. Rowling",cat:"Novelist",born:"31 Jul 1965",by:1965,died:"—",dy:9999,edu:"B.A. French & Classics, University of Exeter (1987); PGCE, Moray House, Edinburgh.",works:"Harry Potter and the Philosopher's Stone (1997), Harry Potter and the Deathly Hallows (2007), The Casual Vacancy (2012), The Cuckoo's Calling (2013, as Robert Galbraith)"},
+  {n:"Tom Holland",cat:"Historian",born:"5 Jan 1968",by:1968,died:"—",dy:9999,edu:"Double first in English & Latin, Queens' College, Cambridge; began an Oxford DPhil (unfinished).",works:"Rubicon (2003), Persian Fire (2005), In the Shadow of the Sword (2012), Dominion (2019)"},
+  {n:"Brandon Sanderson",cat:"Novelist",born:"19 Dec 1975",by:1975,died:"—",dy:9999,edu:"M.A. Creative Writing (2004) & B.A. English (2000), Brigham Young University.",works:"Mistborn: The Final Empire (2006), Warbreaker (2009), The Way of Kings (2010), Words of Radiance (2014)"},
+  {n:"Ezra Klein",cat:"Journalist",born:"9 May 1984",by:1984,died:"—",dy:9999,edu:"B.A. Political Science, UCLA (2005). No graduate degree.",works:"Why We're Polarized (2020), Abundance (2025)"}
 ];
 
 const jobs = {
@@ -392,12 +407,13 @@ const jobs = {
   "Walt Whitman":"Journalist & government clerk","Emily Dickinson":"— (lived at family home)","Charles Baudelaire":"Art critic & translator","Arthur Rimbaud":"Trader in Africa (post-poetry)","Paul Verlaine":"Clerk & teacher","W.B. Yeats":"Writer; later Irish senator","T.S. Eliot":"Bank clerk, then publisher (Faber)","Ezra Pound":"— (writer; briefly teacher)","Robert Frost":"Farmer & teacher","Wallace Stevens":"Insurance executive",
   "Rainer Maria Rilke":"Secretary to Rodin","Pablo Neruda":"Diplomat (consul)","Federico García Lorca":"Theatre director (La Barraca)","Langston Hughes":"— (various odd jobs)","Sylvia Plath":"Teacher (briefly, Smith)","Anne Sexton":"— (homemaker; later teacher)","Elizabeth Bishop":"— (later professor)","W.H. Auden":"Schoolteacher","Dylan Thomas":"Journalist & BBC broadcaster","Seamus Heaney":"Teacher & professor",
   "Maya Angelou":"Performer & journalist","Gerard Manley Hopkins":"Jesuit priest","Henrik Ibsen":"Theatre director","Anton Chekhov":"Physician","Oscar Wilde":"Magazine editor & lecturer","George Bernard Shaw":"Music & theatre critic","August Strindberg":"Journalist & librarian","Bertolt Brecht":"Theatre director","Luigi Pirandello":"University professor","Eugene O'Neill":"— (sailor, early)",
-  "Tennessee Williams":"— (clerk, early)","Arthur Miller":"— (full-time playwright)","Samuel Beckett":"Lecturer (briefly)","Harold Pinter":"Actor","Tom Stoppard":"Journalist (drama critic)","Joseph Pulitzer":"Newspaper publisher","Nellie Bly":"Industrialist (Iron Clad Mfg)","H.L. Mencken":"Newspaper editor","Ernie Pyle":"Newspaper correspondent","Hunter S. Thompson":"Journalist"
+  "Tennessee Williams":"— (clerk, early)","Arthur Miller":"— (full-time playwright)","Samuel Beckett":"Lecturer (briefly)","Harold Pinter":"Actor","Tom Stoppard":"Journalist (drama critic)","Joseph Pulitzer":"Newspaper publisher","Nellie Bly":"Industrialist (Iron Clad Mfg)","H.L. Mencken":"Newspaper editor","Ernie Pyle":"Newspaper correspondent","Hunter S. Thompson":"Journalist",
+  "Lord Byron":"Aristocrat & peer (House of Lords)","C.S. Lewis":"Oxford & Cambridge professor","Charles Bukowski":"Postal clerk (US Postal Service)","Kurt Vonnegut":"Publicist, General Electric","Robert Caro":"Investigative reporter (Newsday)","Michael Crichton":"Physician (trained); filmmaker","Ron Chernow":"Think-tank analyst & journalist","George R.R. Martin":"TV writer; chess director (early)","Andrew Roberts":"Investment banker (early)","J.K. Rowling":"Teacher; Amnesty researcher (early)","Tom Holland":"— (author & podcaster)","Brandon Sanderson":"Hotel night auditor (early)","Ezra Klein":"Policy journalist (Vox, NYT)"
 };
 authors.forEach(a => a.job = jobs[a.n] || "—");
 
 const noDegree = new Set([
-  "Charles Dickens","Leo Tolstoy","Gustave Flaubert","George Eliot","Mark Twain","Herman Melville","Henry James","Thomas Hardy","Émile Zola","Joseph Conrad","Virginia Woolf","F. Scott Fitzgerald","Ernest Hemingway","William Faulkner","John Steinbeck","George Orwell","Gabriel García Márquez","Jorge Luis Borges","Edith Wharton","Ralph Ellison","James Baldwin","Cormac McCarthy","Doris Lessing","Evelyn Waugh","José Saramago","Isabel Allende","Walt Whitman","Emily Dickinson","Charles Baudelaire","Arthur Rimbaud","Paul Verlaine","W.B. Yeats","Robert Frost","Rainer Maria Rilke","Pablo Neruda","Anne Sexton","Dylan Thomas","Maya Angelou","Henrik Ibsen","George Bernard Shaw","August Strindberg","Bertolt Brecht","Eugene O'Neill","Harold Pinter","Tom Stoppard","Joseph Pulitzer","Nellie Bly","H.L. Mencken","Ernie Pyle","Hunter S. Thompson"
+  "Charles Dickens","Leo Tolstoy","Gustave Flaubert","George Eliot","Mark Twain","Herman Melville","Henry James","Thomas Hardy","Émile Zola","Joseph Conrad","Virginia Woolf","F. Scott Fitzgerald","Ernest Hemingway","William Faulkner","John Steinbeck","George Orwell","Gabriel García Márquez","Jorge Luis Borges","Edith Wharton","Ralph Ellison","James Baldwin","Cormac McCarthy","Doris Lessing","Evelyn Waugh","José Saramago","Isabel Allende","Walt Whitman","Emily Dickinson","Charles Baudelaire","Arthur Rimbaud","Paul Verlaine","W.B. Yeats","Robert Frost","Rainer Maria Rilke","Pablo Neruda","Anne Sexton","Dylan Thomas","Maya Angelou","Henrik Ibsen","George Bernard Shaw","August Strindberg","Bertolt Brecht","Eugene O'Neill","Harold Pinter","Tom Stoppard","Joseph Pulitzer","Nellie Bly","H.L. Mencken","Ernie Pyle","Hunter S. Thompson","Charles Bukowski"
 ]);
 authors.forEach(a => a.self = noDegree.has(a.n));
 
@@ -411,7 +427,7 @@ document.getElementById('stat').innerHTML =
   `<strong>${withDegree}/${authors.length}</strong> writers listed hold a formal university degree of any kind`;
 
 const gradDegree = new Set([
-  "Franz Kafka","Toni Morrison","Kazuo Ishiguro","Margaret Atwood","Philip Roth","Ursula K. Le Guin","T.S. Eliot","Ezra Pound","Luigi Pirandello","Jean-Paul Sartre"
+  "Franz Kafka","Toni Morrison","Kazuo Ishiguro","Margaret Atwood","Philip Roth","Ursula K. Le Guin","T.S. Eliot","Ezra Pound","Luigi Pirandello","Jean-Paul Sartre","Kurt Vonnegut","Michael Crichton","Brandon Sanderson","George R.R. Martin","Andrew Roberts"
 ]);
 const withGrad = authors.filter(a => gradDegree.has(a.n)).length;
 document.getElementById('stat2').innerHTML =
