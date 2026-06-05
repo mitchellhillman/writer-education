@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 Famous Authors (Last 200 Years)</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #111111;
+    --muted: #767676;
+    --line: #111111;
+    --hair: #d6d6d6;
+    --accent: #e10600;
+    --mark: #fff6d6;
+    --novelist: #111111;
+    --poet: #e10600;
+    --playwright: #0a4fc4;
+    --journalist: #767676;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.35;
+    font-size: 15px;
+  }
+  header {
+    padding: 3.5rem 2rem 2rem;
+    border-bottom: 4px solid var(--ink);
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+  header h1 {
+    margin: 0;
+    font-size: clamp(2rem, 6vw, 4.25rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    max-width: 18ch;
+  }
+  header p {
+    margin: 1.25rem 0 0;
+    color: var(--muted);
+    font-size: .9rem;
+    max-width: 60ch;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+  .controls {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--hair);
+  }
+  #search {
+    flex: 1 1 240px;
+    max-width: 320px;
+    padding: .5rem 0;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 1rem;
+    background: transparent;
+    color: var(--ink);
+  }
+  #search:focus { outline: none; border-color: var(--accent); }
+  #search::placeholder { color: var(--muted); }
+  .filters { display: flex; gap: 0; flex-wrap: wrap; }
+  .filter {
+    border: 1px solid var(--ink);
+    border-right: none;
+    background: var(--bg);
+    color: var(--ink);
+    padding: .55rem 1.1rem;
+    border-radius: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .filter:last-child { border-right: 1px solid var(--ink); }
+  .filter:hover { background: #f0f0f0; }
+  .filter.active { background: var(--ink); color: #fff; }
+  .wrap { max-width: 1320px; margin: 0 auto 5rem; padding: 0 2rem; }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.25rem 0;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--hair);
+  }
+  .legend .swatch { display: inline-block; width: 14px; height: 14px; background: var(--mark); border: 1px solid var(--accent); margin-right: .5rem; vertical-align: -2px; }
+  .count { margin-left: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left;
+    padding: 1rem .9rem;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink);
+    border-bottom: 2px solid var(--ink);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th:first-child { padding-left: 0; }
+  thead th:hover { color: var(--accent); }
+  thead th .arrow { opacity: .35; font-size: .65rem; }
+  tbody td { padding: 1rem .9rem; border-bottom: 1px solid var(--hair); vertical-align: top; font-size: .82rem; }
+  tbody td:first-child { padding-left: 0; }
+  tbody tr:hover { background: #f7f7f7; }
+  tbody tr.selftaught { background: var(--mark); }
+  tbody tr.selftaught td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  tbody tr.selftaught:hover { background: #fdeebf; }
+  .num { color: var(--muted); font-size: .72rem; width: 2.5rem; font-variant-numeric: tabular-nums; padding-top: 1.15rem; }
+  .name { font-weight: 700; min-width: 150px; font-size: .92rem; letter-spacing: -0.01em; }
+  .badge {
+    display: inline-block;
+    margin-top: .35rem;
+    font-size: .6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    padding: .15rem .45rem;
+    border-radius: 0;
+    color: #fff;
+  }
+  .badge.Novelist { background: var(--novelist); }
+  .badge.Poet { background: var(--poet); }
+  .badge.Playwright { background: var(--playwright); }
+  .badge.Journalist { background: var(--journalist); }
+  .dates { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .edu { min-width: 210px; color: #333; }
+  .job { min-width: 150px; color: #333; }
+  .works { min-width: 260px; color: #333; }
+  footer {
+    max-width: 1320px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 1.5rem 2rem 4rem;
+    border-top: 1px solid var(--hair);
+  }
+  @media (max-width: 900px) {
+    tbody td { font-size: .78rem; }
+    .controls { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>100 Famous Authors of the Last 200 Years</h1>
+  <p>Novelists, poets, playwrights &amp; journalists. Education, dates, and major works (sourced from Wikipedia).</p>
+</header>
+
+<div class="controls">
+  <input id="search" type="text" placeholder="Search name, work, school…" aria-label="Search">
+  <div class="filters">
+    <button class="filter active" data-cat="all">All</button>
+    <button class="filter" data-cat="Novelist">Novelists</button>
+    <button class="filter" data-cat="Poet">Poets</button>
+    <button class="filter" data-cat="Playwright">Playwrights</button>
+    <button class="filter" data-cat="Journalist">Journalists</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="legend">
+    <span><span class="swatch"></span>No completed university degree / self-taught</span>
+    <span class="count" id="count"></span>
+  </div>
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th data-sort="num" class="num">#</th>
+        <th data-sort="name">Author <span class="arrow">↕</span></th>
+        <th data-sort="born">Born <span class="arrow">↕</span></th>
+        <th data-sort="died">Died <span class="arrow">↕</span></th>
+        <th data-sort="edu">Education <span class="arrow">↕</span></th>
+        <th data-sort="job">Day Job <span class="arrow">↕</span></th>
+        <th data-sort="works">Major Works</th>
+      </tr>
+    </thead>
+    <tbody id="body"></tbody>
+  </table>
+</div>
+
+<footer>Compiled June 2026. Education reflects highest formal level reached; many listed authors were largely self-taught. Years denote first publication unless noted.</footer>
+
+<script>
+const authors = [
+  {n:"Charles Dickens",cat:"Novelist",born:"7 Feb 1812",by:1812,died:"9 Jun 1870",dy:1870,edu:"No university; Wellington House Academy, London. Largely self-taught.",works:"The Pickwick Papers (1836), Oliver Twist (1837), A Christmas Carol (1843), David Copperfield (1850), Great Expectations (1861)"},
+  {n:"Leo Tolstoy",cat:"Novelist",born:"9 Sep 1828",by:1828,died:"20 Nov 1910",dy:1910,edu:"Law & oriental languages, Kazan University (left without degree).",works:"Childhood (1852), War and Peace (1869), Anna Karenina (1878), The Death of Ivan Ilyich (1886), Resurrection (1899)"},
+  {n:"Fyodor Dostoevsky",cat:"Novelist",born:"11 Nov 1821",by:1821,died:"9 Feb 1881",dy:1881,edu:"Graduated, Nikolayev Military Engineering Institute, St. Petersburg.",works:"Notes from Underground (1864), Crime and Punishment (1866), The Idiot (1869), Demons (1872), The Brothers Karamazov (1880)"},
+  {n:"Gustave Flaubert",cat:"Novelist",born:"12 Dec 1821",by:1821,died:"8 May 1880",dy:1880,edu:"Lycée Pierre-Corneille, Rouen; studied law in Paris (abandoned, no degree).",works:"Madame Bovary (1857), Salammbô (1862), Sentimental Education (1869), Three Tales (1877), Bouvard et Pécuchet (1881)"},
+  {n:"George Eliot",cat:"Novelist",born:"22 Nov 1819",by:1819,died:"22 Dec 1880",dy:1880,edu:"No university; girls' boarding schools to age 16. Self-educated; classes at Bedford College, London.",works:"Adam Bede (1859), The Mill on the Floss (1860), Silas Marner (1861), Middlemarch (1872), Daniel Deronda (1876)"},
+  {n:"Mark Twain",cat:"Novelist",born:"30 Nov 1835",by:1835,died:"21 Apr 1910",dy:1910,edu:"No university; left school ~5th grade, printer's apprentice. Self-educated.",works:"The Innocents Abroad (1869), Tom Sawyer (1876), Life on the Mississippi (1883), Huckleberry Finn (1884), A Connecticut Yankee (1889)"},
+  {n:"Herman Melville",cat:"Novelist",born:"1 Aug 1819",by:1819,died:"28 Sep 1891",dy:1891,edu:"No university; Albany Academy & Columbia Grammar School. Self-taught.",works:"Typee (1846), Moby-Dick (1851), Bartleby, the Scrivener (1853), Clarel (1876), Billy Budd (1924)"},
+  {n:"Henry James",cat:"Novelist",born:"15 Apr 1843",by:1843,died:"28 Feb 1916",dy:1916,edu:"Briefly Harvard Law School (no degree); private tutors, European travel.",works:"The Portrait of a Lady (1881), The Turn of the Screw (1898), The Wings of the Dove (1902), The Ambassadors (1903), The Golden Bowl (1904)"},
+  {n:"Thomas Hardy",cat:"Novelist",born:"2 Jun 1840",by:1840,died:"11 Jan 1928",dy:1928,edu:"No degree; architectural apprenticeship; studied at King's College London.",works:"Far from the Madding Crowd (1874), The Return of the Native (1878), The Mayor of Casterbridge (1886), Tess of the d'Urbervilles (1891), Jude the Obscure (1895)"},
+  {n:"Émile Zola",cat:"Novelist",born:"2 Apr 1840",by:1840,died:"29 Sep 1902",dy:1902,edu:"No university; Collège Bourbon, failed the baccalauréat twice. Self-educated.",works:"Thérèse Raquin (1867), Les Rougon-Macquart (1871–93), Nana (1880), Germinal (1885), J'Accuse…! (1898)"},
+  {n:"Joseph Conrad",cat:"Novelist",born:"3 Dec 1857",by:1857,died:"3 Aug 1924",dy:1924,edu:"No formal higher education; privately tutored. Self-educated.",works:"Almayer's Folly (1895), Heart of Darkness (1899), Lord Jim (1900), Nostromo (1904), The Secret Agent (1907)"},
+  {n:"Virginia Woolf",cat:"Novelist",born:"25 Jan 1882",by:1882,died:"28 Mar 1941",dy:1941,edu:"No degree; home tutoring; classes at Ladies' Dept, King's College London.",works:"The Voyage Out (1915), Mrs Dalloway (1925), To the Lighthouse (1927), Orlando (1928), A Room of One's Own (1929)"},
+  {n:"James Joyce",cat:"Novelist",born:"2 Feb 1882",by:1882,died:"13 Jan 1941",dy:1941,edu:"B.A. modern languages, University College Dublin (1902).",works:"Dubliners (1914), A Portrait of the Artist as a Young Man (1916), Ulysses (1922), Finnegans Wake (1939)"},
+  {n:"Franz Kafka",cat:"Novelist",born:"3 Jul 1883",by:1883,died:"3 Jun 1924",dy:1924,edu:"Doctor of Law (Dr. jur.), Charles-Ferdinand University, Prague (1906).",works:"The Metamorphosis (1915), The Judgment (1913), The Trial (1925), The Castle (1926)"},
+  {n:"Marcel Proust",cat:"Novelist",born:"10 Jul 1871",by:1871,died:"18 Nov 1922",dy:1922,edu:"Licence in law & licence ès lettres (philosophy), University of Paris (Sorbonne).",works:"In Search of Lost Time (1913–27), Pleasures and Days (1896), Pastiches et mélanges (1919)"},
+  {n:"F. Scott Fitzgerald",cat:"Novelist",born:"24 Sep 1896",by:1896,died:"21 Dec 1940",dy:1940,edu:"Attended Princeton University (left without graduating).",works:"This Side of Paradise (1920), The Beautiful and Damned (1922), The Great Gatsby (1925), Tender Is the Night (1934)"},
+  {n:"Ernest Hemingway",cat:"Novelist",born:"21 Jul 1899",by:1899,died:"2 Jul 1961",dy:1961,edu:"High-school diploma, Oak Park and River Forest H.S. (1917). Began as a reporter.",works:"The Sun Also Rises (1926), A Farewell to Arms (1929), For Whom the Bell Tolls (1940), The Old Man and the Sea (1952)"},
+  {n:"William Faulkner",cat:"Novelist",born:"25 Sep 1897",by:1897,died:"6 Jul 1962",dy:1962,edu:"Attended University of Mississippi as a special student (~3 semesters, no degree).",works:"The Sound and the Fury (1929), As I Lay Dying (1930), Light in August (1932), Absalom, Absalom! (1936)"},
+  {n:"John Steinbeck",cat:"Novelist",born:"27 Feb 1902",by:1902,died:"20 Dec 1968",dy:1968,edu:"Attended Stanford University intermittently (1919–25, no degree).",works:"Tortilla Flat (1935), Of Mice and Men (1937), The Grapes of Wrath (1939), East of Eden (1952)"},
+  {n:"George Orwell",cat:"Novelist",born:"25 Jun 1903",by:1903,died:"21 Jan 1950",dy:1950,edu:"Eton College on scholarship (1917–21); no university.",works:"Down and Out in Paris and London (1933), Homage to Catalonia (1938), Animal Farm (1945), Nineteen Eighty-Four (1949)"},
+  {n:"Aldous Huxley",cat:"Novelist",born:"26 Jul 1894",by:1894,died:"22 Nov 1963",dy:1963,edu:"B.A. English Literature, Balliol College, Oxford (1916).",works:"Point Counter Point (1928), Brave New World (1932), The Perennial Philosophy (1945), The Doors of Perception (1954), Island (1962)"},
+  {n:"Vladimir Nabokov",cat:"Novelist",born:"22 Apr 1899",by:1899,died:"2 Jul 1977",dy:1977,edu:"B.A., Trinity College, Cambridge (1922).",works:"Speak, Memory (1951), Lolita (1955), Pale Fire (1962)"},
+  {n:"Gabriel García Márquez",cat:"Novelist",born:"6 Mar 1927",by:1927,died:"17 Apr 2014",dy:2014,edu:"Studied law, National University of Colombia & University of Cartagena (no degree).",works:"No One Writes to the Colonel (1961), One Hundred Years of Solitude (1967), The Autumn of the Patriarch (1975), Chronicle of a Death Foretold (1981), Love in the Time of Cholera (1985)"},
+  {n:"Jorge Luis Borges",cat:"Novelist",born:"24 Aug 1899",by:1899,died:"14 Jun 1986",dy:1986,edu:"Baccalauréat, Collège de Genève (1918); no university degree. Self-educated.",works:"A Universal History of Infamy (1935), The Garden of Forking Paths (1941), Ficciones (1944), El Aleph (1949)"},
+  {n:"Toni Morrison",cat:"Novelist",born:"18 Feb 1931",by:1931,died:"5 Aug 2019",dy:2019,edu:"M.A. American Literature, Cornell (1955); B.A. English, Howard (1953).",works:"The Bluest Eye (1970), Song of Solomon (1977), Beloved (1987), Jazz (1992), Paradise (1998)"},
+  {n:"Chinua Achebe",cat:"Novelist",born:"16 Nov 1930",by:1930,died:"21 Mar 2013",dy:2013,edu:"B.A. English, history & theology, University College Ibadan (1953).",works:"Things Fall Apart (1958), No Longer at Ease (1960), Arrow of God (1964), A Man of the People (1966), Anthills of the Savannah (1987)"},
+  {n:"Salman Rushdie",cat:"Novelist",born:"19 Jun 1947",by:1947,died:"—",dy:9999,edu:"B.A. History, King's College, Cambridge (1968).",works:"Midnight's Children (1981), Shame (1983), The Satanic Verses (1988), The Moor's Last Sigh (1995), Joseph Anton (2012)"},
+  {n:"Kazuo Ishiguro",cat:"Novelist",born:"8 Nov 1954",by:1954,died:"—",dy:9999,edu:"M.A. Creative Writing, University of East Anglia (1980); B.A., University of Kent (1978).",works:"A Pale View of Hills (1982), An Artist of the Floating World (1986), The Remains of the Day (1989), Never Let Me Go (2005), Klara and the Sun (2021)"},
+  {n:"Margaret Atwood",cat:"Novelist",born:"18 Nov 1939",by:1939,died:"—",dy:9999,edu:"M.A., Radcliffe College, Harvard (1962); B.A., Victoria College, University of Toronto (1961).",works:"The Handmaid's Tale (1985), Alias Grace (1996), The Blind Assassin (2000), Oryx and Crake (2003), The Testaments (2019)"},
+  {n:"Haruki Murakami",cat:"Novelist",born:"12 Jan 1949",by:1949,died:"—",dy:9999,edu:"B.A. Drama/Theatre Arts, Waseda University, Tokyo.",works:"Norwegian Wood (1987), The Wind-Up Bird Chronicle (1994), Kafka on the Shore (2002), 1Q84 (2009)"},
+  {n:"Italo Calvino",cat:"Novelist",born:"15 Oct 1923",by:1923,died:"19 Sep 1985",dy:1985,edu:"Arts degree, University of Turin (1947), thesis on Joseph Conrad.",works:"The Path to the Nest of Spiders (1947), The Baron in the Trees (1957), Cosmicomics (1965), Invisible Cities (1972), If on a winter's night a traveler (1979)"},
+  {n:"Albert Camus",cat:"Novelist",born:"7 Nov 1913",by:1913,died:"4 Jan 1960",dy:1960,edu:"Licence de philosophie, University of Algiers (1936).",works:"The Stranger (1942), The Myth of Sisyphus (1942), The Plague (1947), The Rebel (1951), The Fall (1956)"},
+  {n:"Jean-Paul Sartre",cat:"Novelist",born:"21 Jun 1905",by:1905,died:"15 Apr 1980",dy:1980,edu:"Agrégation in philosophy, École Normale Supérieure, Paris (1929, ranked first).",works:"Nausea (1938), Being and Nothingness (1943), No Exit (1944), Existentialism Is a Humanism (1946), Critique of Dialectical Reason (1960)"},
+  {n:"D.H. Lawrence",cat:"Novelist",born:"11 Sep 1885",by:1885,died:"2 Mar 1930",dy:1930,edu:"Teaching certificate, University College, Nottingham (1908).",works:"Sons and Lovers (1913), The Rainbow (1915), Women in Love (1920), Lady Chatterley's Lover (1928), Studies in Classic American Literature (1923)"},
+  {n:"E.M. Forster",cat:"Novelist",born:"1 Jan 1879",by:1879,died:"7 Jun 1970",dy:1970,edu:"B.A. classics & history, King's College, Cambridge (1901).",works:"A Room with a View (1908), Howards End (1910), A Passage to India (1924), Maurice (1971), The Machine Stops (1909)"},
+  {n:"Edith Wharton",cat:"Novelist",born:"24 Jan 1862",by:1862,died:"11 Aug 1937",dy:1937,edu:"No institutional education; private tutors & governesses. Self-taught.",works:"The Decoration of Houses (1897), The House of Mirth (1905), Ethan Frome (1911), The Age of Innocence (1920), A Backward Glance (1934)"},
+  {n:"Willa Cather",cat:"Novelist",born:"7 Dec 1873",by:1873,died:"24 Apr 1947",dy:1947,edu:"B.A. English, University of Nebraska–Lincoln (1895).",works:"O Pioneers! (1913), My Ántonia (1918), One of Ours (1922), Death Comes for the Archbishop (1927), Sapphira and the Slave Girl (1940)"},
+  {n:"Zora Neale Hurston",cat:"Novelist",born:"7 Jan 1891",by:1891,died:"28 Jan 1960",dy:1960,edu:"B.A. anthropology, Barnard College (1928); grad study at Columbia under Franz Boas.",works:"Mules and Men (1935), Their Eyes Were Watching God (1937), Tell My Horse (1938), Moses, Man of the Mountain (1939), Barracoon (2018)"},
+  {n:"Ralph Ellison",cat:"Novelist",born:"1 Mar 1913",by:1913,died:"16 Apr 1994",dy:1994,edu:"Attended Tuskegee Institute (1933–36, music; left before finishing).",works:"Invisible Man (1952), Shadow and Act (1964), Going to the Territory (1986), Juneteenth (1999), Three Days Before the Shooting… (2010)"},
+  {n:"James Baldwin",cat:"Novelist",born:"2 Aug 1924",by:1924,died:"1 Dec 1987",dy:1987,edu:"No college; DeWitt Clinton High School (1942). Self-educated.",works:"Go Tell It on the Mountain (1953), Notes of a Native Son (1955), Giovanni's Room (1956), The Fire Next Time (1963), If Beale Street Could Talk (1974)"},
+  {n:"Saul Bellow",cat:"Novelist",born:"10 Jun 1915",by:1915,died:"5 Apr 2005",dy:2005,edu:"B.A. anthropology & sociology, Northwestern (1937); grad study at Wisconsin.",works:"The Adventures of Augie March (1953), Henderson the Rain King (1959), Herzog (1964), Mr. Sammler's Planet (1970), Humboldt's Gift (1975)"},
+  {n:"Philip Roth",cat:"Novelist",born:"19 Mar 1933",by:1933,died:"22 May 2018",dy:2018,edu:"M.A. English, University of Chicago (1955); B.A., Bucknell.",works:"Goodbye, Columbus (1959), Portnoy's Complaint (1969), American Pastoral (1997), The Human Stain (2000), The Plot Against America (2004)"},
+  {n:"John Updike",cat:"Novelist",born:"18 Mar 1932",by:1932,died:"27 Jan 2009",dy:2009,edu:"B.A. English (summa cum laude), Harvard (1954); Ruskin School, Oxford.",works:"Rabbit, Run (1960), Rabbit Is Rich (1981), The Witches of Eastwick (1984), Rabbit at Rest (1990), In the Beauty of the Lilies (1996)"},
+  {n:"Cormac McCarthy",cat:"Novelist",born:"20 Jul 1933",by:1933,died:"13 Jun 2023",dy:2023,edu:"Attended University of Tennessee (no degree).",works:"Suttree (1979), Blood Meridian (1985), All the Pretty Horses (1992), No Country for Old Men (2005), The Road (2006)"},
+  {n:"Don DeLillo",cat:"Novelist",born:"20 Nov 1936",by:1936,died:"—",dy:9999,edu:"B.A. Communication Arts, Fordham University (1958).",works:"The Names (1982), White Noise (1985), Libra (1988), Mao II (1991), Underworld (1997)"},
+  {n:"Thomas Pynchon",cat:"Novelist",born:"8 May 1937",by:1937,died:"—",dy:9999,edu:"B.A. English, Cornell University (1959).",works:"V. (1963), The Crying of Lot 49 (1966), Gravity's Rainbow (1973), Mason & Dixon (1997), Inherent Vice (2009)"},
+  {n:"Joan Didion",cat:"Journalist",born:"5 Dec 1934",by:1934,died:"23 Dec 2021",dy:2021,edu:"B.A. English, University of California, Berkeley (1956).",works:"Slouching Towards Bethlehem (1968), Play It as It Lays (1970), The White Album (1979), The Year of Magical Thinking (2005), Blue Nights (2011)"},
+  {n:"Ursula K. Le Guin",cat:"Novelist",born:"21 Oct 1929",by:1929,died:"22 Jan 2018",dy:2018,edu:"M.A. French, Columbia (1952); B.A., Radcliffe College (1951).",works:"A Wizard of Earthsea (1968), The Left Hand of Darkness (1969), The Tombs of Atuan (1971), The Farthest Shore (1972), The Dispossessed (1974)"},
+  {n:"Doris Lessing",cat:"Novelist",born:"22 Oct 1919",by:1919,died:"17 Nov 2013",dy:2013,edu:"Self-educated; left school at 13. No higher education.",works:"The Grass Is Singing (1950), The Golden Notebook (1962), Briefing for a Descent into Hell (1971), The Good Terrorist (1985), Children of Violence (1952–69)"},
+  {n:"Iris Murdoch",cat:"Novelist",born:"15 Jul 1919",by:1919,died:"8 Feb 1999",dy:1999,edu:"First-class Greats, Somerville College, Oxford (1942); postgrad philosophy, Cambridge.",works:"Under the Net (1954), The Bell (1958), The Black Prince (1973), The Sea, the Sea (1978), The Sovereignty of Good (1970)"},
+  {n:"Graham Greene",cat:"Novelist",born:"2 Oct 1904",by:1904,died:"3 Apr 1991",dy:1991,edu:"Studied history, Balliol College, Oxford.",works:"The Power and the Glory (1940), The Heart of the Matter (1948), The End of the Affair (1951), The Quiet American (1955), Our Man in Havana (1958)"},
+  {n:"Evelyn Waugh",cat:"Novelist",born:"28 Oct 1903",by:1903,died:"10 Apr 1966",dy:1966,edu:"Hertford College, Oxford (history scholarship; left without completing degree).",works:"Decline and Fall (1928), A Handful of Dust (1934), Brideshead Revisited (1945), Sword of Honour trilogy (1952), The Ordeal of Gilbert Pinfold (1957)"},
+  {n:"Gabriel Chevallier",cat:"Novelist",born:"3 May 1895",by:1895,died:"6 Apr 1969",dy:1969,edu:"École des Beaux-Arts, Lyon (entered 1911).",works:"La Peur / Fear (1930), Clochemerle (1934), Mascarade (1948), Clochemerle-Babylone (1951), Clochemerle-les-Bains (1963)"},
+  {n:"Günter Grass",cat:"Novelist",born:"16 Oct 1927",by:1927,died:"13 Apr 2015",dy:2015,edu:"Sculpture & graphics, Kunstakademie Düsseldorf & Berlin University of the Arts.",works:"The Tin Drum (1959), Cat and Mouse (1961), Dog Years (1963), Crabwalk (2002), Peeling the Onion (2006)"},
+  {n:"Milan Kundera",cat:"Novelist",born:"1 Apr 1929",by:1929,died:"11 Jul 2023",dy:2023,edu:"Charles University, Prague; film at FAMU (Academy of Performing Arts), Prague.",works:"The Joke (1967), The Book of Laughter and Forgetting (1979), The Unbearable Lightness of Being (1984), Slowness (1995), Ignorance (2000)"},
+  {n:"José Saramago",cat:"Novelist",born:"16 Nov 1922",by:1922,died:"18 Jun 2010",dy:2010,edu:"No higher education; technical school, trained as a lathe operator.",works:"Baltasar and Blimunda (1982), The Year of the Death of Ricardo Reis (1984), Blindness (1995), All the Names (1997), Death with Interruptions (2005)"},
+  {n:"Isabel Allende",cat:"Novelist",born:"2 Aug 1942",by:1942,died:"—",dy:9999,edu:"No university degree; private schooling in Bolivia & Lebanon.",works:"The House of the Spirits (1982), Of Love and Shadows (1984), Eva Luna (1987), Daughter of Fortune (1999), City of the Beasts (2002)"},
+  {n:"J.R.R. Tolkien",cat:"Novelist",born:"3 Jan 1892",by:1892,died:"2 Sep 1973",dy:1973,edu:"First-class honours, English language & literature, Exeter College, Oxford (1915).",works:"The Hobbit (1937), The Lord of the Rings (1954), The Silmarillion (1977), The History of Middle-earth (1983)"},
+  {n:"Mikhail Bulgakov",cat:"Novelist",born:"15 May 1891",by:1891,died:"10 Mar 1940",dy:1940,edu:"Degree in medicine, Kiev University (1916).",works:"The White Guard (1925), Heart of a Dog (1925), The Days of the Turbins (1926), Flight (1927), The Master and Margarita (1966)"},
+  {n:"Aleksandr Solzhenitsyn",cat:"Novelist",born:"11 Dec 1918",by:1918,died:"3 Aug 2008",dy:2008,edu:"Degree in mathematics & physics, Rostov State University.",works:"One Day in the Life of Ivan Denisovich (1962), Cancer Ward (1966), In the First Circle (1968), August 1914 (1971), The Gulag Archipelago (1973)"},
+  {n:"Walt Whitman",cat:"Poet",born:"31 May 1819",by:1819,died:"26 Mar 1892",dy:1892,edu:"Self-taught; left school ~age 11. Printer's apprentice & journalist.",works:"Leaves of Grass (1855), Drum-Taps (1865), Democratic Vistas (1871), Specimen Days (1882)"},
+  {n:"Emily Dickinson",cat:"Poet",born:"10 Dec 1830",by:1830,died:"15 May 1886",dy:1886,edu:"Amherst Academy; briefly Mount Holyoke Female Seminary (no degree).",works:"\"Success is counted sweetest\" (1864), \"Safe in their Alabaster Chambers\" (1862), \"A narrow Fellow in the Grass\" (1866), Poems (1890)"},
+  {n:"Charles Baudelaire",cat:"Poet",born:"9 Apr 1821",by:1821,died:"31 Aug 1867",dy:1867,edu:"Lycée Louis-le-Grand, Paris; nominal law study, École de Droit.",works:"La Fanfarlo (1847), Les Fleurs du mal (1857), Les Paradis artificiels (1860), Le Spleen de Paris (1869)"},
+  {n:"Arthur Rimbaud",cat:"Poet",born:"20 Oct 1854",by:1854,died:"10 Nov 1891",dy:1891,edu:"Collège de Charleville (abandoned formal education as a teenager).",works:"Le Bateau ivre (1871), Une Saison en Enfer (1873), Illuminations (1886)"},
+  {n:"Paul Verlaine",cat:"Poet",born:"30 Mar 1844",by:1844,died:"8 Jan 1896",dy:1896,edu:"Lycée Bonaparte (now Condorcet), Paris; developed via literary salons.",works:"Poèmes saturniens (1866), Fêtes galantes (1869), Romances sans paroles (1874), Sagesse (1880)"},
+  {n:"W.B. Yeats",cat:"Poet",born:"13 Jun 1865",by:1865,died:"28 Jan 1939",dy:1939,edu:"Metropolitan School of Art, Dublin (1884–86); no university degree.",works:"The Wanderings of Oisin (1889), Cathleen ni Houlihan (1902), The Wild Swans at Coole (1919), The Tower (1928)"},
+  {n:"T.S. Eliot",cat:"Poet",born:"26 Sep 1888",by:1888,died:"4 Jan 1965",dy:1965,edu:"B.A. (1909) & M.A. (1910), Harvard; Sorbonne & Merton College, Oxford.",works:"\"The Love Song of J. Alfred Prufrock\" (1915), The Waste Land (1922), Murder in the Cathedral (1935), Four Quartets (1943)"},
+  {n:"Ezra Pound",cat:"Poet",born:"30 Oct 1885",by:1885,died:"1 Nov 1972",dy:1972,edu:"PhB, Hamilton College (1905); M.A. Romance languages, University of Pennsylvania (1906).",works:"Ripostes (1912), Cathay (1915), Hugh Selwyn Mauberley (1920), The Cantos (1915–62)"},
+  {n:"Robert Frost",cat:"Poet",born:"26 Mar 1874",by:1874,died:"29 Jan 1963",dy:1963,edu:"Briefly Dartmouth & Harvard (no degree); 40+ honorary degrees later.",works:"A Boy's Will (1913), North of Boston (1914), Mountain Interval (1916), New Hampshire (1923)"},
+  {n:"Wallace Stevens",cat:"Poet",born:"2 Oct 1879",by:1879,died:"2 Aug 1955",dy:1955,edu:"Harvard (non-degree special student); law degree, New York Law School (1903).",works:"Harmonium (1923), The Man with the Blue Guitar (1937), The Auroras of Autumn (1950), Collected Poems (1954)"},
+  {n:"Rainer Maria Rilke",cat:"Poet",born:"4 Dec 1875",by:1875,died:"29 Dec 1926",dy:1926,edu:"Studied literature, art history & philosophy, Charles University, Prague (no degree).",works:"The Book of Hours (1905), The Notebooks of Malte Laurids Brigge (1910), Duino Elegies (1923), Sonnets to Orpheus (1923), Letters to a Young Poet (1929)"},
+  {n:"Pablo Neruda",cat:"Poet",born:"12 Jul 1904",by:1904,died:"23 Sep 1973",dy:1973,edu:"Studied French, Universidad de Chile, Santiago (left without finishing).",works:"Twenty Love Poems and a Song of Despair (1924), Residence on Earth (1933), Canto General (1950), The Heights of Macchu Picchu (1945), One Hundred Love Sonnets (1959)"},
+  {n:"Federico García Lorca",cat:"Poet",born:"5 Jun 1898",by:1898,died:"19 Aug 1936",dy:1936,edu:"Studied law & literature, University of Granada; Residencia de Estudiantes, Madrid.",works:"Romancero gitano (1928), Blood Wedding (1933), Yerma (1934), Poeta en Nueva York (1940), The House of Bernarda Alba (1936)"},
+  {n:"Langston Hughes",cat:"Poet",born:"1 Feb 1901",by:1901,died:"22 May 1967",dy:1967,edu:"B.A., Lincoln University, Pennsylvania (1929); briefly Columbia (1921–22).",works:"The Weary Blues (1926), Not Without Laughter (1930), The Ways of White Folks (1934), Montage of a Dream Deferred (1951), The Panther and the Lash (1967)"},
+  {n:"Sylvia Plath",cat:"Poet",born:"27 Oct 1932",by:1932,died:"11 Feb 1963",dy:1963,edu:"B.A. summa cum laude, Smith College (1955); Newnham College, Cambridge (Fulbright).",works:"The Colossus and Other Poems (1960), The Bell Jar (1963), Ariel (1965), The Collected Poems (1981), The Journals of Sylvia Plath (1982)"},
+  {n:"Anne Sexton",cat:"Poet",born:"9 Nov 1928",by:1928,died:"4 Oct 1974",dy:1974,edu:"No college degree; Robert Lowell's poetry seminar, Boston University (1958).",works:"To Bedlam and Part Way Back (1960), Live or Die (1966), Transformations (1971), The Awful Rowing Toward God (1975), 45 Mercy Street (1976)"},
+  {n:"Elizabeth Bishop",cat:"Poet",born:"8 Feb 1911",by:1911,died:"6 Oct 1979",dy:1979,edu:"B.A., Vassar College (1934).",works:"North & South (1946), Poems: North & South (1955), Questions of Travel (1965), The Complete Poems (1969), Geography III (1976)"},
+  {n:"W.H. Auden",cat:"Poet",born:"21 Feb 1907",by:1907,died:"29 Sep 1973",dy:1973,edu:"Read English, Christ Church, Oxford (third-class degree, later M.A.).",works:"Poems (1930), The Orators (1932), For the Time Being (1944), The Age of Anxiety (1947), The Shield of Achilles (1955)"},
+  {n:"Dylan Thomas",cat:"Poet",born:"27 Oct 1914",by:1914,died:"9 Nov 1953",dy:1953,edu:"Swansea Grammar School; left at 16 to work as a newspaper reporter.",works:"18 Poems (1934), Twenty-five Poems (1936), A Child's Christmas in Wales (1952), Under Milk Wood (1954), \"Do not go gentle into that good night\" (1951)"},
+  {n:"Seamus Heaney",cat:"Poet",born:"13 Apr 1939",by:1939,died:"30 Aug 2013",dy:2013,edu:"First-class degree in English, Queen's University Belfast (1961).",works:"Death of a Naturalist (1966), North (1975), Field Work (1979), Beowulf: A New Verse Translation (1999), Human Chain (2010)"},
+  {n:"Maya Angelou",cat:"Poet",born:"4 Apr 1928",by:1928,died:"28 May 2014",dy:2014,edu:"No university degree; California Labor School. Honorary professorship, Wake Forest.",works:"I Know Why the Caged Bird Sings (1969), Gather Together in My Name (1974), And Still I Rise (1978), All God's Children Need Traveling Shoes (1986), Mom & Me & Mom (2013)"},
+  {n:"Gerard Manley Hopkins",cat:"Poet",born:"28 Jul 1844",by:1844,died:"8 Jun 1889",dy:1889,edu:"B.A. Classics (Greats), Balliol College, Oxford (1867); St Beuno's College, Wales.",works:"The Wreck of the Deutschland (1875), The Windhover (1877), God's Grandeur (1877), Pied Beauty (1877), Spring and Fall (1880)"},
+  {n:"Henrik Ibsen",cat:"Playwright",born:"20 Mar 1828",by:1828,died:"23 May 1906",dy:1906,edu:"Self-educated; left school ~15, apprenticed as a pharmacist. No university.",works:"Brand (1865), Peer Gynt (1867), A Doll's House (1879), Ghosts (1881), Hedda Gabler (1890)"},
+  {n:"Anton Chekhov",cat:"Playwright",born:"29 Jan 1860",by:1860,died:"15 Jul 1904",dy:1904,edu:"Medical degree, Moscow University (qualified 1884).",works:"The Seagull (1896), Uncle Vanya (1898), Three Sisters (1901), The Cherry Orchard (1904), The Lady with the Dog (1899)"},
+  {n:"Oscar Wilde",cat:"Playwright",born:"16 Oct 1854",by:1854,died:"30 Nov 1900",dy:1900,edu:"Double first in Greats; Trinity College Dublin then Magdalen College, Oxford (1878).",works:"The Happy Prince and Other Tales (1888), The Picture of Dorian Gray (1890), Lady Windermere's Fan (1892), Salomé (1893), The Importance of Being Earnest (1895)"},
+  {n:"George Bernard Shaw",cat:"Playwright",born:"26 Jul 1856",by:1856,died:"2 Nov 1950",dy:1950,edu:"Secondary schooling only; self-taught at the British Museum Reading Room.",works:"Arms and the Man (1894), Man and Superman (1903), Pygmalion (1913), Saint Joan (1923), The Intelligent Woman's Guide to Socialism (1928)"},
+  {n:"August Strindberg",cat:"Playwright",born:"22 Jan 1849",by:1849,died:"14 May 1912",dy:1912,edu:"Attended Uppsala University (1867–72, left without graduating).",works:"The Red Room (1879), The Father (1887), Miss Julie (1888), Inferno (1897), A Dream Play (1902)"},
+  {n:"Bertolt Brecht",cat:"Playwright",born:"10 Feb 1898",by:1898,died:"14 Aug 1956",dy:1956,edu:"Studied medicine & drama, Ludwig Maximilian University of Munich (no degree).",works:"The Threepenny Opera (1928), Life of Galileo (1938), Mother Courage and Her Children (1939), The Good Person of Szechwan (1943), The Caucasian Chalk Circle (1948)"},
+  {n:"Luigi Pirandello",cat:"Playwright",born:"28 Jun 1867",by:1867,died:"10 Dec 1936",dy:1936,edu:"PhD in Romance Philology, University of Bonn (1891).",works:"The Late Mattia Pascal (1904), Six Characters in Search of an Author (1921), Henry IV (1922), One, No One and One Hundred Thousand (1926)"},
+  {n:"Eugene O'Neill",cat:"Playwright",born:"16 Oct 1888",by:1888,died:"27 Nov 1953",dy:1953,edu:"One year at Princeton; Baker's \"Workshop 47\", Harvard (1914–15, no degree).",works:"Strange Interlude (1928), Mourning Becomes Electra (1931), Ah, Wilderness! (1933), The Iceman Cometh (1946), Long Day's Journey into Night (1956)"},
+  {n:"Tennessee Williams",cat:"Playwright",born:"26 Mar 1911",by:1911,died:"25 Feb 1983",dy:1983,edu:"B.A. English, University of Iowa (1938).",works:"The Glass Menagerie (1944), A Streetcar Named Desire (1947), Cat on a Hot Tin Roof (1955), Sweet Bird of Youth (1959), The Night of the Iguana (1961)"},
+  {n:"Arthur Miller",cat:"Playwright",born:"17 Oct 1915",by:1915,died:"10 Feb 2005",dy:2005,edu:"B.A., University of Michigan (1938).",works:"All My Sons (1947), Death of a Salesman (1949), The Crucible (1953), A View from the Bridge (1955), After the Fall (1964)"},
+  {n:"Samuel Beckett",cat:"Playwright",born:"13 Apr 1906",by:1906,died:"22 Dec 1989",dy:1989,edu:"B.A. Modern Languages (French & Italian), Trinity College Dublin (1927).",works:"Molloy (1951), Malone Dies (1951), Waiting for Godot (1953), The Unnamable (1953), Endgame (1957)"},
+  {n:"Harold Pinter",cat:"Playwright",born:"10 Oct 1930",by:1930,died:"24 Dec 2008",dy:2008,edu:"Briefly RADA & Central School of Speech and Drama (neither completed).",works:"The Room (1957), The Birthday Party (1958), The Homecoming (1964), No Man's Land (1975), Betrayal (1978)"},
+  {n:"Tom Stoppard",cat:"Playwright",born:"3 Jul 1937",by:1937,died:"29 Nov 2025",dy:2025,edu:"No university; left Pocklington School at 17 to work as a journalist.",works:"Rosencrantz and Guildenstern Are Dead (1966), The Real Thing (1982), Arcadia (1993), Shakespeare in Love (1998), Leopoldstadt (2020)"},
+  {n:"Joseph Pulitzer",cat:"Journalist",born:"10 Apr 1847",by:1847,died:"29 Oct 1911",dy:1911,edu:"No formal degree; self-educated, admitted to the Missouri bar (1868).",works:"St. Louis Post-Dispatch (1878), New York World (1883), Statue of Liberty pedestal campaign (1885), Columbia School of Journalism (1912), the Pulitzer Prizes (1917)"},
+  {n:"Nellie Bly",cat:"Journalist",born:"5 May 1864",by:1864,died:"27 Jan 1922",dy:1922,edu:"No degree; one term at Indiana Normal School (1879).",works:"\"The Girl Puzzle\" (1885), \"Ten Days in a Mad-House\" (1887), Six Months in Mexico (1888), Around the World in Seventy-Two Days (1890)"},
+  {n:"H.L. Mencken",cat:"Journalist",born:"12 Sep 1880",by:1880,died:"29 Jan 1956",dy:1956,edu:"Valedictorian, Baltimore Polytechnic Institute (1896); minimal post-secondary.",works:"The Philosophy of Friedrich Nietzsche (1908), A Book of Prefaces (1917), The American Language (1919), Notes on Democracy (1926), Happy Days (1940)"},
+  {n:"Ernie Pyle",cat:"Journalist",born:"3 Aug 1900",by:1900,died:"18 Apr 1945",dy:1945,edu:"Attended Indiana University Bloomington (left a semester short, no degree).",works:"Ernie Pyle in England (1941), Here Is Your War (1943), \"The Death of Captain Waskow\" (1944), Brave Men (1944), Home Country (1947)"},
+  {n:"Hunter S. Thompson",cat:"Journalist",born:"18 Jul 1937",by:1937,died:"20 Feb 2005",dy:2005,edu:"No degree; did not graduate high school; audited courses at Columbia.",works:"Hell's Angels (1967), Fear and Loathing in Las Vegas (1972), Fear and Loathing on the Campaign Trail '72 (1973), The Rum Diary (1998), Kingdom of Fear (2003)"}
+];
+
+const jobs = {
+  "Charles Dickens":"Law clerk & court reporter","Leo Tolstoy":"Landowner & army officer","Fyodor Dostoevsky":"Military engineer","Gustave Flaubert":"— (private income)","George Eliot":"Magazine editor & translator","Mark Twain":"Mississippi riverboat pilot","Herman Melville":"Sailor, later customs inspector","Henry James":"— (full-time writer)","Thomas Hardy":"Architect","Émile Zola":"Publishing clerk & journalist",
+  "Joseph Conrad":"Merchant marine officer","Virginia Woolf":"Publisher & critic","James Joyce":"Language teacher (Berlitz)","Franz Kafka":"Insurance officer","Marcel Proust":"— (nominal librarian)","F. Scott Fitzgerald":"Ad copywriter & screenwriter","Ernest Hemingway":"Journalist","William Faulkner":"Postmaster & screenwriter","John Steinbeck":"Laborer & war correspondent","George Orwell":"Colonial police officer (Burma)",
+  "Aldous Huxley":"Teacher & journalist","Vladimir Nabokov":"Professor & lepidopterist","Gabriel García Márquez":"Journalist","Jorge Luis Borges":"Librarian (later Nat'l Library director)","Toni Morrison":"Book editor & professor","Chinua Achebe":"Broadcaster & professor","Salman Rushdie":"Advertising copywriter","Kazuo Ishiguro":"Social worker (early)","Margaret Atwood":"University lecturer","Haruki Murakami":"Jazz bar owner",
+  "Italo Calvino":"Publishing editor (Einaudi)","Albert Camus":"Journalist","Jean-Paul Sartre":"Philosophy teacher","D.H. Lawrence":"Schoolteacher","E.M. Forster":"Writer; private secretary in India","Edith Wharton":"— (independent means)","Willa Cather":"Magazine editor & teacher","Zora Neale Hurston":"Anthropologist","Ralph Ellison":"— (various; ex-musician)","James Baldwin":"— (full-time writer)",
+  "Saul Bellow":"University professor","Philip Roth":"University teacher","John Updike":"New Yorker staff writer","Cormac McCarthy":"— (full-time writer)","Don DeLillo":"Advertising copywriter","Thomas Pynchon":"Technical writer (Boeing)","Joan Didion":"Magazine editor (Vogue)","Ursula K. Le Guin":"— (writer; some teaching)","Doris Lessing":"Clerk & secretary (early)","Iris Murdoch":"Philosophy lecturer (Oxford)",
+  "Graham Greene":"Journalist & MI6 officer","Evelyn Waugh":"Schoolteacher & journalist","Gabriel Chevallier":"Commercial artist","Günter Grass":"Sculptor & graphic artist","Milan Kundera":"University lecturer (film)","José Saramago":"Mechanic, then editor","Isabel Allende":"Journalist","J.R.R. Tolkien":"Professor of philology","Mikhail Bulgakov":"Physician","Aleksandr Solzhenitsyn":"Maths & physics teacher",
+  "Walt Whitman":"Journalist & government clerk","Emily Dickinson":"— (lived at family home)","Charles Baudelaire":"Art critic & translator","Arthur Rimbaud":"Trader in Africa (post-poetry)","Paul Verlaine":"Clerk & teacher","W.B. Yeats":"Writer; later Irish senator","T.S. Eliot":"Bank clerk, then publisher (Faber)","Ezra Pound":"— (writer; briefly teacher)","Robert Frost":"Farmer & teacher","Wallace Stevens":"Insurance executive",
+  "Rainer Maria Rilke":"Secretary to Rodin","Pablo Neruda":"Diplomat (consul)","Federico García Lorca":"Theatre director (La Barraca)","Langston Hughes":"— (various odd jobs)","Sylvia Plath":"Teacher (briefly, Smith)","Anne Sexton":"— (homemaker; later teacher)","Elizabeth Bishop":"— (later professor)","W.H. Auden":"Schoolteacher","Dylan Thomas":"Journalist & BBC broadcaster","Seamus Heaney":"Teacher & professor",
+  "Maya Angelou":"Performer & journalist","Gerard Manley Hopkins":"Jesuit priest","Henrik Ibsen":"Theatre director","Anton Chekhov":"Physician","Oscar Wilde":"Magazine editor & lecturer","George Bernard Shaw":"Music & theatre critic","August Strindberg":"Journalist & librarian","Bertolt Brecht":"Theatre director","Luigi Pirandello":"University professor","Eugene O'Neill":"— (sailor, early)",
+  "Tennessee Williams":"— (clerk, early)","Arthur Miller":"— (full-time playwright)","Samuel Beckett":"Lecturer (briefly)","Harold Pinter":"Actor","Tom Stoppard":"Journalist (drama critic)","Joseph Pulitzer":"Newspaper publisher","Nellie Bly":"Industrialist (Iron Clad Mfg)","H.L. Mencken":"Newspaper editor","Ernie Pyle":"Newspaper correspondent","Hunter S. Thompson":"Journalist"
+};
+authors.forEach(a => a.job = jobs[a.n] || "—");
+
+const noDegree = new Set([
+  "Charles Dickens","Leo Tolstoy","Gustave Flaubert","George Eliot","Mark Twain","Herman Melville","Henry James","Thomas Hardy","Émile Zola","Joseph Conrad","Virginia Woolf","F. Scott Fitzgerald","Ernest Hemingway","William Faulkner","John Steinbeck","George Orwell","Gabriel García Márquez","Jorge Luis Borges","Edith Wharton","Ralph Ellison","James Baldwin","Cormac McCarthy","Doris Lessing","Evelyn Waugh","José Saramago","Isabel Allende","Walt Whitman","Emily Dickinson","Charles Baudelaire","Arthur Rimbaud","Paul Verlaine","W.B. Yeats","Robert Frost","Rainer Maria Rilke","Pablo Neruda","Anne Sexton","Dylan Thomas","Maya Angelou","Henrik Ibsen","George Bernard Shaw","August Strindberg","Bertolt Brecht","Eugene O'Neill","Harold Pinter","Tom Stoppard","Joseph Pulitzer","Nellie Bly","H.L. Mencken","Ernie Pyle","Hunter S. Thompson"
+]);
+authors.forEach(a => a.self = noDegree.has(a.n));
+
+const body = document.getElementById('body');
+const countEl = document.getElementById('count');
+const search = document.getElementById('search');
+let activeCat = 'all';
+let sortKey = 'num', sortDir = 1;
+authors.forEach((a, i) => a.num = i + 1);
+
+function render() {
+  const q = search.value.trim().toLowerCase();
+  let rows = authors.filter(a => {
+    const catOk = activeCat === 'all' || a.cat === activeCat;
+    const qOk = !q || (a.n + ' ' + a.edu + ' ' + a.works).toLowerCase().includes(q);
+    return catOk && qOk;
+  });
+  rows.sort((x, y) => {
+    let vx = x[sortKey], vy = y[sortKey];
+    if (sortKey === 'name') { vx = x.n; vy = y.n; }
+    if (typeof vx === 'string') return vx.localeCompare(vy) * sortDir;
+    return (vx - vy) * sortDir;
+  });
+  body.innerHTML = rows.map(a => `
+    <tr class="${a.self ? 'selftaught' : ''}">
+      <td class="num">${a.num}</td>
+      <td class="name">${a.n}<br><span class="badge ${a.cat}">${a.cat}</span></td>
+      <td class="dates">${a.born}</td>
+      <td class="dates">${a.died}</td>
+      <td class="edu">${a.edu}</td>
+      <td class="job">${a.job}</td>
+      <td class="works">${a.works}</td>
+    </tr>`).join('');
+  countEl.textContent = `Showing ${rows.length} of ${authors.length} authors`;
+}
+
+document.querySelectorAll('.filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    render();
+  });
+});
+
+document.querySelectorAll('thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (key === 'works') return;
+    if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+    render();
+  });
+});
+
+search.addEventListener('input', render);
+render();
+</script>
+</body>
+</html>
