@@ -150,6 +150,21 @@
   .badge.Playwright { background: var(--playwright); }
   .badge.Journalist { background: var(--journalist); }
   .dates { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .nat { white-space: nowrap; }
+  .mobile-sort {
+    display: none;
+    width: 100%;
+    padding: .6rem .5rem;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
   .edu { min-width: 210px; color: #333; }
   .job { min-width: 150px; color: #333; }
   .works { min-width: 260px; color: #333; }
@@ -163,9 +178,57 @@
     padding: 1.5rem 2rem 4rem;
     border-top: 1px solid var(--hair);
   }
-  @media (max-width: 900px) {
-    tbody td { font-size: .78rem; }
-    .controls { flex-direction: column; align-items: stretch; }
+  @media (max-width: 760px) {
+    header { padding: 2.25rem 1.25rem 1.25rem; border-bottom-width: 3px; }
+    header p { margin-top: .9rem; }
+    .controls { flex-direction: column; align-items: stretch; gap: 1rem; padding: 1.25rem; }
+    #search { max-width: none; }
+    .filters { width: 100%; }
+    .filter { flex: 1 1 0; text-align: center; padding: .65rem .25rem; font-size: .68rem; }
+    .mobile-sort { display: block; }
+    .wrap { padding: 0 1.25rem; }
+    .legend { flex-direction: column; align-items: flex-start; gap: .5rem; padding: 1rem 0; }
+    .count { margin-left: 0; }
+
+    thead { position: absolute; left: -9999px; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    tbody tr {
+      border: 1px solid var(--hair);
+      border-left: 4px solid var(--ink);
+      padding: 1rem 1.1rem 1.15rem;
+      margin-bottom: 1rem;
+    }
+    tbody tr:hover { background: transparent; }
+    tbody tr.selftaught { background: var(--mark); border-left-color: var(--accent); }
+    tbody tr.selftaught td:first-child { box-shadow: none; }
+    tbody td {
+      border: none;
+      padding: .3rem 0;
+      font-size: .85rem;
+      display: grid;
+      grid-template-columns: 5.5rem 1fr;
+      gap: .75rem;
+      align-items: baseline;
+    }
+    tbody td:first-child { padding-left: 0; }
+    tbody td::before {
+      content: attr(data-label);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: .56rem;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    td.name {
+      display: block;
+      font-size: 1.2rem;
+      line-height: 1.1;
+      margin-bottom: .35rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--hair);
+    }
+    td.name::before { display: none; }
+    .badge { margin-top: .45rem; }
   }
 </style>
 </head>
@@ -184,6 +247,13 @@
     <button class="filter" data-cat="Playwright">Playwrights</button>
     <button class="filter" data-cat="Journalist">Journalists</button>
   </div>
+  <select class="mobile-sort" id="msort" aria-label="Sort authors">
+    <option value="num|1">Sort: List order</option>
+    <option value="name|1">Sort: Author (A–Z)</option>
+    <option value="nat|1">Sort: Nationality</option>
+    <option value="by|1">Sort: Born (oldest first)</option>
+    <option value="by|-1">Sort: Born (newest first)</option>
+  </select>
 </div>
 
 <div class="wrap">
@@ -194,10 +264,10 @@
   <table id="tbl">
     <thead>
       <tr>
-        <th data-sort="num" class="num">#</th>
         <th data-sort="name">Author <span class="arrow">↕</span></th>
-        <th data-sort="born">Born <span class="arrow">↕</span></th>
-        <th data-sort="died">Died <span class="arrow">↕</span></th>
+        <th data-sort="nat">Nationality <span class="arrow">↕</span></th>
+        <th data-sort="by">Born <span class="arrow">↕</span></th>
+        <th data-sort="dy">Died <span class="arrow">↕</span></th>
         <th data-sort="edu">Education <span class="arrow">↕</span></th>
         <th data-sort="job">Day Job <span class="arrow">↕</span></th>
         <th data-sort="works">Major Works</th>
@@ -332,6 +402,20 @@ const noDegree = new Set([
 ]);
 authors.forEach(a => a.self = noDegree.has(a.n));
 
+const nats = {
+  "Charles Dickens":"🇬🇧 British","Leo Tolstoy":"🇷🇺 Russian","Fyodor Dostoevsky":"🇷🇺 Russian","Gustave Flaubert":"🇫🇷 French","George Eliot":"🇬🇧 British","Mark Twain":"🇺🇸 American","Herman Melville":"🇺🇸 American","Henry James":"🇺🇸 American-British","Thomas Hardy":"🇬🇧 British","Émile Zola":"🇫🇷 French",
+  "Joseph Conrad":"🇵🇱 Polish-British","Virginia Woolf":"🇬🇧 British","James Joyce":"🇮🇪 Irish","Franz Kafka":"🇨🇿 Czech (Bohemian)","Marcel Proust":"🇫🇷 French","F. Scott Fitzgerald":"🇺🇸 American","Ernest Hemingway":"🇺🇸 American","William Faulkner":"🇺🇸 American","John Steinbeck":"🇺🇸 American","George Orwell":"🇬🇧 British",
+  "Aldous Huxley":"🇬🇧 British","Vladimir Nabokov":"🇷🇺 Russian-American","Gabriel García Márquez":"🇨🇴 Colombian","Jorge Luis Borges":"🇦🇷 Argentine","Toni Morrison":"🇺🇸 American","Chinua Achebe":"🇳🇬 Nigerian","Salman Rushdie":"🇮🇳 Indian-British","Kazuo Ishiguro":"🇬🇧 British (Japanese-born)","Margaret Atwood":"🇨🇦 Canadian","Haruki Murakami":"🇯🇵 Japanese",
+  "Italo Calvino":"🇮🇹 Italian","Albert Camus":"🇫🇷 French","Jean-Paul Sartre":"🇫🇷 French","D.H. Lawrence":"🇬🇧 British","E.M. Forster":"🇬🇧 British","Edith Wharton":"🇺🇸 American","Willa Cather":"🇺🇸 American","Zora Neale Hurston":"🇺🇸 American","Ralph Ellison":"🇺🇸 American","James Baldwin":"🇺🇸 American",
+  "Saul Bellow":"🇺🇸 American","Philip Roth":"🇺🇸 American","John Updike":"🇺🇸 American","Cormac McCarthy":"🇺🇸 American","Don DeLillo":"🇺🇸 American","Thomas Pynchon":"🇺🇸 American","Joan Didion":"🇺🇸 American","Ursula K. Le Guin":"🇺🇸 American","Doris Lessing":"🇬🇧 British","Iris Murdoch":"🇬🇧 British (Irish-born)",
+  "Graham Greene":"🇬🇧 British","Evelyn Waugh":"🇬🇧 British","Gabriel Chevallier":"🇫🇷 French","Günter Grass":"🇩🇪 German","Milan Kundera":"🇨🇿 Czech-French","José Saramago":"🇵🇹 Portuguese","Isabel Allende":"🇨🇱 Chilean","J.R.R. Tolkien":"🇬🇧 British","Mikhail Bulgakov":"🇷🇺 Russian","Aleksandr Solzhenitsyn":"🇷🇺 Russian",
+  "Walt Whitman":"🇺🇸 American","Emily Dickinson":"🇺🇸 American","Charles Baudelaire":"🇫🇷 French","Arthur Rimbaud":"🇫🇷 French","Paul Verlaine":"🇫🇷 French","W.B. Yeats":"🇮🇪 Irish","T.S. Eliot":"🇺🇸 American-British","Ezra Pound":"🇺🇸 American","Robert Frost":"🇺🇸 American","Wallace Stevens":"🇺🇸 American",
+  "Rainer Maria Rilke":"🇦🇹 Austrian","Pablo Neruda":"🇨🇱 Chilean","Federico García Lorca":"🇪🇸 Spanish","Langston Hughes":"🇺🇸 American","Sylvia Plath":"🇺🇸 American","Anne Sexton":"🇺🇸 American","Elizabeth Bishop":"🇺🇸 American","W.H. Auden":"🇬🇧 British-American","Dylan Thomas":"🏴󠁧󠁢󠁷󠁬󠁳󠁿 Welsh","Seamus Heaney":"🇮🇪 Irish",
+  "Maya Angelou":"🇺🇸 American","Gerard Manley Hopkins":"🇬🇧 British","Henrik Ibsen":"🇳🇴 Norwegian","Anton Chekhov":"🇷🇺 Russian","Oscar Wilde":"🇮🇪 Irish","George Bernard Shaw":"🇮🇪 Irish","August Strindberg":"🇸🇪 Swedish","Bertolt Brecht":"🇩🇪 German","Luigi Pirandello":"🇮🇹 Italian","Eugene O'Neill":"🇺🇸 American",
+  "Tennessee Williams":"🇺🇸 American","Arthur Miller":"🇺🇸 American","Samuel Beckett":"🇮🇪 Irish","Harold Pinter":"🇬🇧 British","Tom Stoppard":"🇬🇧 British (Czech-born)","Joseph Pulitzer":"🇭🇺 Hungarian-American","Nellie Bly":"🇺🇸 American","H.L. Mencken":"🇺🇸 American","Ernie Pyle":"🇺🇸 American","Hunter S. Thompson":"🇺🇸 American"
+};
+authors.forEach(a => a.nat = nats[a.n] || "—");
+
 const body = document.getElementById('body');
 const countEl = document.getElementById('count');
 const search = document.getElementById('search');
@@ -354,13 +438,13 @@ function render() {
   });
   body.innerHTML = rows.map(a => `
     <tr class="${a.self ? 'selftaught' : ''}">
-      <td class="num">${a.num}</td>
-      <td class="name">${a.n}<br><span class="badge ${a.cat}">${a.cat}</span></td>
-      <td class="dates">${a.born}</td>
-      <td class="dates">${a.died}</td>
-      <td class="edu">${a.edu}</td>
-      <td class="job">${a.job}</td>
-      <td class="works">${a.works}</td>
+      <td class="name" data-label="">${a.n}<br><span class="badge ${a.cat}">${a.cat}</span></td>
+      <td class="nat" data-label="Nationality">${a.nat}</td>
+      <td class="dates" data-label="Born">${a.born}</td>
+      <td class="dates" data-label="Died">${a.died}</td>
+      <td class="edu" data-label="Education">${a.edu}</td>
+      <td class="job" data-label="Day Job">${a.job}</td>
+      <td class="works" data-label="Works">${a.works}</td>
     </tr>`).join('');
   countEl.textContent = `Showing ${rows.length} of ${authors.length} authors`;
 }
@@ -381,6 +465,13 @@ document.querySelectorAll('thead th').forEach(th => {
     if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
     render();
   });
+});
+
+document.getElementById('msort').addEventListener('change', e => {
+  const [key, dir] = e.target.value.split('|');
+  sortKey = key;
+  sortDir = Number(dir);
+  render();
 });
 
 search.addEventListener('input', render);
