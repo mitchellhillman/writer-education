@@ -244,6 +244,7 @@
   <h1>100 Famous Writers of the Last 200 Years</h1>
   <p>Novelists, poets, playwrights &amp; journalists. Education, dates, and major works (sourced from Wikipedia).</p>
   <p class="stat" id="stat"></p>
+  <p class="stat" id="stat2"></p>
 </header>
 
 <div class="controls">
@@ -408,6 +409,13 @@ authors.forEach((a, i) => a.num = i + 1);
 const withDegree = authors.filter(a => !a.self).length;
 document.getElementById('stat').innerHTML =
   `<strong>${withDegree}/${authors.length}</strong> writers listed hold a formal university degree of any kind`;
+
+const gradDegree = new Set([
+  "Franz Kafka","Toni Morrison","Kazuo Ishiguro","Margaret Atwood","Philip Roth","Ursula K. Le Guin","T.S. Eliot","Ezra Pound","Luigi Pirandello","Jean-Paul Sartre"
+]);
+const withGrad = authors.filter(a => gradDegree.has(a.n)).length;
+document.getElementById('stat2').innerHTML =
+  `<strong>${withGrad}/${authors.length}</strong> hold a graduate degree (master's, doctorate or equivalent)`;
 
 function render() {
   let rows = authors.slice();
