@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>113 Famous Writers (Last 200 Years)</title>
+<title>Education levels of famous writers</title>
 <style>
   :root {
     --bg: #ffffff;
@@ -42,25 +42,33 @@
     line-height: 1.0;
     letter-spacing: -0.02em;
     text-transform: uppercase;
-    max-width: 28ch;
   }
   header p {
     margin: 1.25rem 0 0;
     color: var(--muted);
     font-size: .9rem;
-    max-width: 60ch;
     text-transform: uppercase;
     letter-spacing: .02em;
   }
   header .stat {
-    margin-top: 1rem;
-    color: var(--ink);
-    font-size: 1rem;
-    font-weight: 700;
+    display: flex;
+    align-items: baseline;
+    gap: .65rem;
+    margin: 1.75rem 0 0;
+    color: var(--muted);
+    font-size: .8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
   }
+  header .stat + .stat { margin-top: .5rem; }
   header .stat strong {
     color: var(--accent);
-    font-size: 1.5rem;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
   }
   .controls {
     display: none;
@@ -119,6 +127,20 @@
     border-bottom: 1px solid var(--hair);
   }
   .legend .swatch { display: inline-block; width: 14px; height: 14px; background: var(--mark); border: 1px solid var(--ink); margin-right: .5rem; vertical-align: -2px; }
+  .sortctl { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; }
+  .sortctl select {
+    font-family: inherit;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    padding: .35rem 1.5rem .35rem .6rem;
+    cursor: pointer;
+  }
   .count { margin-left: auto; }
   table { width: 100%; border-collapse: collapse; }
   thead th {
@@ -129,21 +151,26 @@
     text-transform: uppercase;
     letter-spacing: .08em;
     color: var(--ink);
-    border-bottom: 2px solid var(--ink);
+    border-bottom: 1px solid var(--hair);
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
   }
-  thead th:first-child { padding-left: 0; }
   thead th:hover { color: var(--accent); }
   thead th .arrow { opacity: .35; font-size: .65rem; }
+  thead th.col-date { width: 1%; padding-left: .7rem; padding-right: .7rem; }
   tbody td { padding: .5rem 1.4rem; border-bottom: 1px solid var(--hair); vertical-align: top; font-size: .82rem; }
-  tbody td:first-child { padding-left: 0; }
+  tbody td.dates { width: 1%; padding-left: .7rem; padding-right: .7rem; }
   tbody tr:hover { background: #f7f7f7; }
   tbody tr.selftaught { background: var(--mark); }
   tbody tr.selftaught:hover { background: #fdeebf; }
+  tbody tr.grad { background: #e8f1ff; }
+  tbody tr.grad:hover { background: #d9e8ff; }
+  .edu span, .works span { display: block; }
+  .edu span + span, .works span + span { margin-top: .3rem; }
   .num { color: var(--muted); font-size: .72rem; width: 2.5rem; font-variant-numeric: tabular-nums; padding-top: 1.15rem; }
   .name { font-weight: 700; min-width: 150px; font-size: .92rem; letter-spacing: -0.01em; }
+  thead th:first-child, tbody td.name { padding-left: .5rem; }
   .badge {
     display: inline-block;
     margin-top: .35rem;
@@ -198,6 +225,7 @@
     .mobile-sort { display: block; }
     .wrap { padding: 0 1.25rem; }
     .legend { flex-direction: column; align-items: flex-start; gap: .5rem; padding: 1rem 0; }
+    .sortctl { display: none; }
     .count { margin-left: 0; }
 
     thead { position: absolute; left: -9999px; }
@@ -210,6 +238,7 @@
     }
     tbody tr:hover { background: transparent; }
     tbody tr.selftaught { background: var(--mark); }
+    tbody tr.grad { background: #e8f1ff; }
     tbody td {
       border: none;
       padding: .3rem 0;
@@ -243,8 +272,7 @@
 </head>
 <body>
 <header>
-  <h1>113 Famous Writers of the Last 200 Years</h1>
-  <p>Novelists, poets, playwrights &amp; journalists. Education, dates, and major works (sourced from Wikipedia).</p>
+  <h1>Education levels of famous writers</h1>
   <p class="stat" id="stat"></p>
   <p class="stat" id="stat2"></p>
 </header>
@@ -252,6 +280,8 @@
 <div class="controls">
   <select class="mobile-sort" id="msort" aria-label="Sort authors">
     <option value="num|1">Sort: List order</option>
+    <option value="degree|1">Sort: Degree (none → graduate)</option>
+    <option value="degree|-1">Sort: Degree (graduate → none)</option>
     <option value="name|1">Sort: Author (A–Z)</option>
     <option value="by|1">Sort: Born (oldest first)</option>
     <option value="by|-1">Sort: Born (newest first)</option>
@@ -261,16 +291,27 @@
 <div class="wrap">
   <div class="legend">
     <span><span class="swatch"></span>No completed university degree / self-taught</span>
+    <span><span class="swatch" style="background:#e8f1ff"></span>Holds a graduate degree</span>
+    <label class="sortctl">Sort
+      <select id="dsort">
+        <option value="num|1">List order</option>
+        <option value="degree|1">Degree: none → graduate</option>
+        <option value="degree|-1">Degree: graduate → none</option>
+        <option value="name|1">Author (A–Z)</option>
+        <option value="by|1">Born (oldest first)</option>
+        <option value="by|-1">Born (newest first)</option>
+      </select>
+    </label>
     <span class="count" id="count"></span>
   </div>
   <table id="tbl">
     <thead>
       <tr>
         <th data-sort="name">Author <span class="arrow">↕</span></th>
-        <th data-sort="by">Born <span class="arrow">↕</span></th>
-        <th data-sort="dy">Died <span class="arrow">↕</span></th>
         <th data-sort="edu">Education <span class="arrow">↕</span></th>
         <th data-sort="job">Day Job <span class="arrow">↕</span></th>
+        <th data-sort="by" class="col-date">Born <span class="arrow">↕</span></th>
+        <th data-sort="dy" class="col-date">Died <span class="arrow">↕</span></th>
         <th data-sort="works">Major Works</th>
       </tr>
     </thead>
@@ -429,9 +470,20 @@ document.getElementById('stat').innerHTML =
 const gradDegree = new Set([
   "Franz Kafka","Toni Morrison","Kazuo Ishiguro","Margaret Atwood","Philip Roth","Ursula K. Le Guin","T.S. Eliot","Ezra Pound","Luigi Pirandello","Jean-Paul Sartre","Kurt Vonnegut","Michael Crichton","Brandon Sanderson","George R.R. Martin","Andrew Roberts"
 ]);
+authors.forEach(a => a.grad = gradDegree.has(a.n));
+authors.forEach(a => a.degree = a.self ? 0 : a.grad ? 2 : 1);
 const withGrad = authors.filter(a => gradDegree.has(a.n)).length;
 document.getElementById('stat2').innerHTML =
   `<strong>${withGrad}/${authors.length}</strong> hold a graduate degree (master's, doctorate or equivalent)`;
+
+const splitEdu = str => {
+  const parts = str.split(/;\s*/).filter(Boolean);
+  if (parts.length > 1 && /^(no\b|self-taught|self-educated|largely self)/i.test(parts[0])) {
+    parts.splice(0, 2, parts[0] + '; ' + parts[1]);
+  }
+  return parts;
+};
+const splitWorks = str => str.split(/\)\s*,\s+/).map((s, i, a) => i < a.length - 1 ? s + ')' : s);
 
 function render() {
   let rows = authors.slice();
@@ -439,16 +491,17 @@ function render() {
     let vx = x[sortKey], vy = y[sortKey];
     if (sortKey === 'name') { vx = x.n; vy = y.n; }
     if (typeof vx === 'string') return vx.localeCompare(vy) * sortDir;
-    return (vx - vy) * sortDir;
+    if (vx !== vy) return (vx - vy) * sortDir;
+    return x.n.localeCompare(y.n);
   });
   body.innerHTML = rows.map(a => `
-    <tr class="${a.self ? 'selftaught' : ''}">
+    <tr class="${a.self ? 'selftaught' : a.grad ? 'grad' : ''}">
       <td class="name" data-label="">${a.n}<br><span class="badge ${a.cat}">${a.cat}</span></td>
+      <td class="edu" data-label="Education">${splitEdu(a.edu).map(s => `<span>${s}</span>`).join('')}</td>
+      <td class="job" data-label="Day Job">${a.job}</td>
       <td class="dates" data-label="Born">${a.born}</td>
       <td class="dates" data-label="Died">${a.died}</td>
-      <td class="edu" data-label="Education">${a.edu}</td>
-      <td class="job" data-label="Day Job">${a.job}</td>
-      <td class="works" data-label="Works">${a.works}</td>
+      <td class="works" data-label="Works">${splitWorks(a.works).map(s => `<span>${s}</span>`).join('')}</td>
     </tr>`).join('');
   countEl.textContent = `${rows.length} writers`;
 }
@@ -462,12 +515,16 @@ document.querySelectorAll('thead th').forEach(th => {
   });
 });
 
-document.getElementById('msort').addEventListener('change', e => {
-  const [key, dir] = e.target.value.split('|');
-  sortKey = key;
-  sortDir = Number(dir);
-  render();
-});
+function bindSort(id) {
+  document.getElementById(id).addEventListener('change', e => {
+    const [key, dir] = e.target.value.split('|');
+    sortKey = key;
+    sortDir = Number(dir);
+    render();
+  });
+}
+bindSort('msort');
+bindSort('dsort');
 
 render();
 </script>
